@@ -1,0 +1,70 @@
+import tkinter as tk
+from PIL import Image, ImageDraw, ImageTk
+
+root = tk.Tk()
+root.title("Image Clicker")
+
+# Load the image using Pillow
+pil_image = Image.open("Net.png")
+
+# Create a Tkinter-compatible image
+image = ImageTk.PhotoImage(pil_image)
+
+image_label = tk.Label(root, image=image)
+image_label.pack()
+
+# Initialize counters for left and right clicks
+left_clicks = 0
+right_clicks = 0
+
+def on_left_click(event):
+    global left_clicks
+    left_clicks += 1
+    
+    # Get the mouse coordinates from the event object
+    x, y = event.x, event.y
+    
+    # Create a drawing context
+    draw = ImageDraw.Draw(pil_image)
+    
+    # Draw a circle at the mouse coordinates
+    draw.ellipse([(x-10, y-10), (x+10, y+10)], fill=None, outline="blue", width=5)
+    
+    # Update the Tkinter image
+    image = ImageTk.PhotoImage(pil_image)
+    image_label.config(image=image)
+    image_label.image = image  # keep a reference to prevent garbage collection
+    
+    # Update the click counters
+    click_counter_label.config(text=f"Distrubted Nets: {right_clicks}, Illigeal Sized: {left_clicks}")
+
+def on_right_click(event):
+    global right_clicks
+    right_clicks += 1
+    
+    # Get the mouse coordinates from the event object
+    x, y = event.x, event.y
+    
+    # Create a drawing context
+    draw = ImageDraw.Draw(pil_image)
+    
+    # Draw an "X" at the mouse coordinates
+    draw.line([(x-10, y-10), (x+10, y+10)], fill="red", width=5)  # top-left to bottom-right
+    draw.line([(x+10, y-10), (x-10, y+10)], fill="red", width=5)  # top-right to bottom-left
+    
+    # Update the Tkinter image
+    image = ImageTk.PhotoImage(pil_image)
+    image_label.config(image=image)
+    image_label.image = image  # keep a reference to prevent garbage collection
+    
+    # Update the click counters
+    click_counter_label.config(text=f"Distrubted Nets: {right_clicks}, Illigeal Sized: {left_clicks}")
+
+# Create a label to display the click counters
+click_counter_label = tk.Label(root, text="Distrubted Nets: 0, Illigeal Sized: 0")
+click_counter_label.pack()
+
+image_label.bind("<Button-1>", on_left_click)  # left-click
+image_label.bind("<Button-3>", on_right_click)  # right-click
+
+root.mainloop()
